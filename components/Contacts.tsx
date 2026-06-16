@@ -2,8 +2,10 @@
 
 import { useState, type FormEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Phone, Mail, Send } from "lucide-react";
+import { Phone, Mail, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { CONTACTS } from "@/lib/site";
+
+type Status = "idle" | "loading" | "success" | "error";
 
 export function Contacts() {
   const reduceMotion = useReducedMotion();
@@ -13,26 +15,26 @@ export function Contacts() {
     email: "",
     comment: "",
   });
+  const [status, setStatus] = useState<Status>("idle");
 
-  // Без бэкенда: формируем mailto-письмо с данными формы.
-  // TODO: при необходимости легко переключить на Formspree / Telegram-бота —
-  // достаточно заменить обработчик ниже на fetch-запрос к нужному эндпоинту.
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setStatus("loading");
 
-    const subject = `Заявка с сайта SHELBIT${form.name ? ` — ${form.name}` : ""}`;
-    const body = [
-      `Имя: ${form.name || "—"}`,
-      `Телефон: ${form.phone || "—"}`,
-      `Email: ${form.email || "—"}`,
-      "",
-      "Комментарий:",
-      form.comment || "—",
-    ].join("\n");
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    window.location.href = `${CONTACTS.emailHref}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
+      if (!res.ok) throw new Error("request failed");
+
+      setStatus("success");
+      setForm({ name: "", phone: "", email: "", comment: "" });
+    } catch {
+      setStatus("error");
+    }
   };
 
   const inputClass =
@@ -108,108 +110,127 @@ export function Contacts() {
             </div>
 
             {/* Правая колонка — форма */}
-            <form
-              onSubmit={handleSubmit}
-              className="rounded-2xl border border-border bg-background/40 p-5 sm:p-6"
-              aria-label="Форма заявки"
-            >
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label htmlFor="name" className="mb-1.5 block text-sm text-muted">
-                    Имя
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    autoComplete="name"
-                    placeholder="Как к вам обращаться"
-                    className={inputClass}
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  />
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="phone"
-                      className="mb-1.5 block text-sm text-muted"
-                    >
-                      Телефон
-                    </label>
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      autoComplete="tel"
-                      placeholder="+7 ..."
-                      className={inputClass}
-                      value={form.phone}
-                      onChange={(e) =>
-                        setForm({ ...form, phone: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="mb-1.5 block text-sm text-muted"
-                    >
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="you@email.com"
-                      className={inputClass}
-                      value={form.email}
-                      onChange={(e) =>
-                        setForm({ ...form, email: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="comment"
-                    className="mb-1.5 block text-sm text-muted"
+            <div className="rounded-2xl border border-border bg-background/40 p-5 sm:p-6">
+              {status === "success" ? (
+                <div className="flex h-full flex-col items-center justify-center gap-4 py-10 text-center">
+                  <CheckCircle2 size={48} className="text-accent" />
+                  <h3 className="font-display text-xl font-bold">Заявка отправлена!</h3>
+                  <p className="body-lg text-sm">
+                    Мы получили вашу заявку и свяжемся с вами в ближайшее время.
+                  </p>
+                  <button
+                    onClick={() => setStatus("idle")}
+                    className="mt-2 rounded-xl border border-border px-5 py-2.5 text-sm text-muted transition-colors hover:border-white/20 hover:text-foreground"
                   >
-                    Комментарий
-                  </label>
-                  <textarea
-                    id="comment"
-                    name="comment"
-                    rows={4}
-                    placeholder="Бюджет, цель инвестиций, интересующий продукт..."
-                    className={`${inputClass} resize-none`}
-                    value={form.comment}
-                    onChange={(e) =>
-                      setForm({ ...form, comment: e.target.value })
-                    }
-                  />
+                    Отправить ещё одну заявку
+                  </button>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} aria-label="Форма заявки">
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <label htmlFor="name" className="mb-1.5 block text-sm text-muted">
+                        Имя
+                      </label>
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        autoComplete="name"
+                        placeholder="Как к вам обращаться"
+                        className={inputClass}
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        disabled={status === "loading"}
+                      />
+                    </div>
 
-                <button
-                  type="submit"
-                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-background shadow-soft transition-all hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-glow"
-                >
-                  Отправить заявку
-                  <Send
-                    size={17}
-                    className="transition-transform group-hover:translate-x-0.5"
-                  />
-                </button>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <label htmlFor="phone" className="mb-1.5 block text-sm text-muted">
+                          Телефон
+                        </label>
+                        <input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          autoComplete="tel"
+                          placeholder="+7 ..."
+                          className={inputClass}
+                          value={form.phone}
+                          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                          disabled={status === "loading"}
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="email" className="mb-1.5 block text-sm text-muted">
+                          Email
+                        </label>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          autoComplete="email"
+                          placeholder="you@email.com"
+                          className={inputClass}
+                          value={form.email}
+                          onChange={(e) => setForm({ ...form, email: e.target.value })}
+                          disabled={status === "loading"}
+                        />
+                      </div>
+                    </div>
 
-                <p className="text-center text-xs text-muted/80">
-                  Нажимая кнопку, вы соглашаетесь на обработку персональных
-                  данных.
-                </p>
-              </div>
-            </form>
+                    <div>
+                      <label htmlFor="comment" className="mb-1.5 block text-sm text-muted">
+                        Комментарий
+                      </label>
+                      <textarea
+                        id="comment"
+                        name="comment"
+                        rows={4}
+                        placeholder="Бюджет, цель инвестиций, интересующий продукт..."
+                        className={`${inputClass} resize-none`}
+                        value={form.comment}
+                        onChange={(e) => setForm({ ...form, comment: e.target.value })}
+                        disabled={status === "loading"}
+                      />
+                    </div>
+
+                    {status === "error" && (
+                      <div className="flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                        <AlertCircle size={16} className="shrink-0" />
+                        Не удалось отправить заявку. Пожалуйста, позвоните нам напрямую.
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={status === "loading"}
+                      className="group inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-background shadow-soft transition-all hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-glow disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+                    >
+                      {status === "loading" ? (
+                        <>
+                          <Loader2 size={17} className="animate-spin" />
+                          Отправка...
+                        </>
+                      ) : (
+                        <>
+                          Отправить заявку
+                          <Send
+                            size={17}
+                            className="transition-transform group-hover:translate-x-0.5"
+                          />
+                        </>
+                      )}
+                    </button>
+
+                    <p className="text-center text-xs text-muted/80">
+                      Нажимая кнопку, вы соглашаетесь на обработку персональных данных.
+                    </p>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
         </motion.div>
       </div>
