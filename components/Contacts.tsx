@@ -2,8 +2,21 @@
 
 import { useState, type FormEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Phone, Mail, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { CONTACTS } from "@/lib/site";
+import {
+  Phone,
+  Mail,
+  Send,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Instagram,
+} from "lucide-react";
+import { CONTACTS, SOCIALS } from "@/lib/site";
+
+const SOCIAL_ICONS: Record<string, typeof Instagram> = {
+  Instagram,
+  Telegram: Send,
+};
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -106,6 +119,36 @@ export function Contacts() {
                   <Mail size={16} />
                   Написать
                 </a>
+              </div>
+
+              {/* Соцсети и каналы */}
+              <div className="mt-8">
+                <p className="text-sm text-muted">Мы в соцсетях и мессенджерах</p>
+                <ul className="mt-3 flex flex-wrap items-center gap-3">
+                  {SOCIALS.map((social) => {
+                    const Icon = SOCIAL_ICONS[social.label];
+                    return (
+                      <li key={social.label}>
+                        <a
+                          href={social.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={social.label}
+                          title={social.label}
+                          className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background/50 text-foreground transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:text-accent"
+                        >
+                          {Icon ? (
+                            <Icon size={20} />
+                          ) : (
+                            <span className="text-xs font-bold tracking-tight">
+                              {social.label}
+                            </span>
+                          )}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             </div>
 

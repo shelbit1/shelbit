@@ -8,6 +8,21 @@ export const CONTACTS = {
   emailHref: "mailto:e.nabiev1997@yandex.com",
 } as const;
 
+export const SOCIALS = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/shelbitru/",
+  },
+  {
+    label: "Telegram",
+    href: "https://web.telegram.org/a/#-1003782250260",
+  },
+  {
+    label: "MAX",
+    href: "https://web.max.ru/-76056564971617",
+  },
+] as const;
+
 export const NAV_LINKS = [
   { label: "Продукты", href: "#products" },
   { label: "Преимущества", href: "#advantages" },
