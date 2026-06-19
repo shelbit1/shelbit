@@ -68,7 +68,7 @@ export function Footer() {
         <div className="mt-12 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
           <p>© {year} SHELBIT. Все права защищены.</p>
           {/* TODO: при необходимости добавить ОГРН и ссылку на политику конфиденциальности */}
-          <p>ИП Набиев Эльвин Шахлар оглы. ИНН 531502263400. Информация на сайте не является публичной офертой.</p>
+          <p>Набиев Эльвин Шахлар оглы. ИНН 531502263400. Информация на сайте не является публичной офертой.</p>
         </div>
       </div>
     </footer>

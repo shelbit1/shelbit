@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 // Шрифты подключены через @fontsource в globals.css — без запросов к Google Fonts при сборке
 
@@ -55,6 +56,17 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body>{children}</body>
+      {/* Bitrix24 — виджет онлайн-чата для общения с менеджерами */}
+      <Script
+        id="bitrix24-chat"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `(function(w,d,u){
+            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+          })(window,document,'https://cdn-ru.bitrix24.ru/b38206428/crm/site_button/loader_2_0uisxr.js');`,
+        }}
+      />
     </html>
   );
 }
