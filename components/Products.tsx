@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Check, LandPlot, Store } from "lucide-react";
+import { ArrowUpRight, Check, HardHat, LandPlot, Layers, Store } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 
@@ -40,6 +40,30 @@ const PRODUCTS: Product[] = [
       "Без операционной нагрузки на собственника",
     ],
   },
+  {
+    icon: HardHat,
+    tag: "Строительство",
+    title: "Стройка помещения из сэндвич-панелей с нашей бригадой",
+    description:
+      "Возводим коммерческое помещение из сэндвич-панелей силами нашей бригады — от проекта до ввода объекта в эксплуатацию.",
+    bullets: [
+      "Подготовка проекта",
+      "Получение РНС",
+      "Ввод в эксплуатацию",
+    ],
+  },
+  {
+    icon: Layers,
+    tag: "Под ключ",
+    title: "ГАБ под ключ",
+    description:
+      "Полный цикл создания готового арендного бизнеса: от поиска земли и согласования арендатора до строительства помещения.",
+    bullets: [
+      "Поиск земли",
+      "Согласование арендатора",
+      "Стройка помещения",
+    ],
+  },
 ];
 
 export function Products() {
@@ -51,7 +75,7 @@ export function Products() {
         <SectionHeading
           eyebrow="Наши продукты"
           title="Что мы предлагаем"
-          description="Два формата входа в коммерческую недвижимость с федеральными арендаторами — выберите подходящий под вашу стратегию."
+          description="Форматы входа в коммерческую недвижимость с федеральными арендаторами — от готового объекта до строительства и ГАБ под ключ."
         />
 
         <div className="mt-14 grid gap-6 lg:grid-cols-2">
