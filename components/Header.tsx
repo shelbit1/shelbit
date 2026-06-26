@@ -55,7 +55,13 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <a
+            href="/login"
+            className="inline-flex items-center rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground transition-all hover:border-white/20 hover:bg-surface/60"
+          >
+            Вход
+          </a>
           <a
             href="#contacts"
             className="inline-flex items-center rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-background shadow-soft transition-all hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-glow"
@@ -92,6 +98,13 @@ export function Header() {
                 {link.label}
               </a>
             ))}
+            <a
+              href="/login"
+              onClick={() => setMenuOpen(false)}
+              className="rounded-lg px-2 py-3 text-base text-muted transition-colors hover:bg-surface hover:text-foreground"
+            >
+              Вход
+            </a>
             <a
               href="#contacts"
               onClick={() => setMenuOpen(false)}
